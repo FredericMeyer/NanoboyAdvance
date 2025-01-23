@@ -106,6 +106,17 @@ struct Bus {
     void WriteByte(u32 address,  u8 value);
     void WriteHalf(u32 address, u16 value);
     void WriteWord(u32 address, u32 value);
+
+    u8  ReadByteNew(u32 address);
+    u16 ReadHalfNew(u32 address);
+    u32 ReadWordNew(u32 address);
+
+    void WriteByteNew(u32 address, u8  value);
+    void WriteHalfNew(u32 address, u16 value);
+    void WriteWordNew(u32 address, u32 value);
+
+    template<u32 mask> u32   ReadWord(u32 address);
+    template<u32 mask> void WriteWord(u32 address, u32 value);
   } hw;
 
   struct Prefetch {
