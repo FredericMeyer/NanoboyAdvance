@@ -19,7 +19,6 @@ constexpr auto color_agb_frag = R"(
 
   #define darken_screen 1.0
   #define target_gamma 2.2
-  #define display_gamma 2.2
   #define sat 1.0
   #define lum 0.94
   #define contrast 1.0
@@ -67,7 +66,6 @@ constexpr auto color_agb_frag = R"(
     screen = clamp(screen * lum, 0.0, 1.0);
     screen = color * screen;
 
-    frag_color = pow(screen, vec4(1.0 / display_gamma));
-    frag_color.a = 1;
+    frag_color = vec4(screen.rgb, 1.0);
   }
 )";

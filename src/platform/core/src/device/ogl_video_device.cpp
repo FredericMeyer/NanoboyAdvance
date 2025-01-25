@@ -64,6 +64,7 @@ void OGLVideoDevice::Initialize() {
   glGenTextures(textures.size(), textures.data());
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
+  glEnable(GL_FRAMEBUFFER_SRGB);
 
   ReloadConfig();
 }
@@ -89,11 +90,14 @@ void OGLVideoDevice::UpdateTextures() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   };
 
+  const bool color_correction_active = config->video.color != Video::Color::No;
+  const auto texture_format = color_correction_active ? GL_RGBA8 : GL_SRGB8_ALPHA8;
+
   // Alternating input sampler and output framebuffer attachment.
   for(const auto texture : {textures[input_index], textures[output_index]}) {
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, gba_screen_width,
+    glTexImage2D(GL_TEXTURE_2D, 0, texture_format, gba_screen_width,
                  gba_screen_height, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
     set_texture_params(texture_filter);
@@ -106,12 +110,13 @@ void OGLVideoDevice::UpdateTextures() {
   const bool xbrz_ghosting =
     config->video.filter == Video::Filter::xBRZ && config->video.lcd_ghosting;
   if(config->video.lcd_ghosting) {
+    const GLint history_texture_format = (!color_correction_active || xbrz_ghosting) ? GL_SRGB8_ALPHA8 : GL_RGBA8;
     const GLsizei texture_width  = xbrz_ghosting ? view_width : gba_screen_width;
     const GLsizei texture_height = xbrz_ghosting ? view_height : gba_screen_height;
 
     glBindTexture(GL_TEXTURE_2D, textures[history_index]);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture_width, texture_height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, history_texture_format, texture_width, texture_height, 0,
                  GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
     set_texture_params(GL_NEAREST);
@@ -120,7 +125,7 @@ void OGLVideoDevice::UpdateTextures() {
   if(xbrz_ghosting) {
     glBindTexture(GL_TEXTURE_2D, textures[xbrz_output_index]);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, view_width, view_height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, texture_format, view_width, view_height, 0,
                  GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
 
     set_texture_params(GL_NEAREST);

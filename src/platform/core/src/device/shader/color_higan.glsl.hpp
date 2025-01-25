@@ -20,13 +20,9 @@ constexpr auto color_higan_frag = R"(
     color.rgb = pow(color.rgb, vec3(4.0));
 
     frag_color = vec4(
-      pow(
-        vec3(
-          1.000 * color.r + 0.196 * color.g,
-          0.039 * color.r + 0.901 * color.g + 0.117 * color.b,
-          0.196 * color.r + 0.039 * color.g + 0.862 * color.b
-        ),
-        vec3(1.0 / 2.2)
-      ), 1.0);
+      1.000 * color.r + 0.196 * color.g,
+      0.039 * color.r + 0.901 * color.g + 0.117 * color.b,
+      0.196 * color.r + 0.039 * color.g + 0.862 * color.b,
+      1.0);
   }
 )";

@@ -8,6 +8,9 @@
 #include <filesystem>
 #include <memory>
 #include <QApplication>
+#if QT_VERSION_MAJOR >= 6
+#include <QColorSpace>
+#endif
 #include <QSurfaceFormat>
 #include <QProxyStyle>
 #include <stdlib.h>
@@ -91,6 +94,11 @@ int main(int argc, char** argv) {
   format.setMajorVersion(3);
   format.setMinorVersion(3);
   format.setSwapInterval(0);
+#if QT_VERSION_MAJOR >= 6
+  format.setColorSpace(QColorSpace::NamedColorSpace::SRgb);
+#else
+  format.setColorSpace(QSurfaceFormat::sRGBColorSpace);
+#endif
   QSurfaceFormat::setDefaultFormat(format);
 
   QApplication app{ argc, argv };
